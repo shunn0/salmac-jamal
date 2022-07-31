@@ -10,23 +10,27 @@ import {
     withStyles,
     Grid,
     Snackbar,
-    Alert
+    Alert,
 } from '@mui/material'
-import { runScriptFromFile } from '../../redux/actions/RunCommandActions'
+import {
+    runScriptFromFile,
+    runScriptFromFileReset,
+} from '../../redux/actions/RunCommandActions'
 //import UploadService from "../services/upload-files.service";
 
 export const RunCmdInput = (props) => {
-    const commandResponse = useSelector(
-        (state) => state.runCommand.commandResponse
+    const loading = useSelector((state) => state.runCommandReducer.loading)
+    const fileUploadResponse = useSelector(
+        (state) => state.runCommandReducer.fileUploadResponse
     )
     const [snackBarState, setSnackBarState] = React.useState({
         open: false,
         vertical: 'top',
         horizontal: 'center',
         snackbarMsg: '',
-        type:'success'
+        type: 'success',
     })
-    const { vertical, horizontal, open, snackbarMsg,type } = snackBarState
+    const { vertical, horizontal, open, snackbarMsg, type } = snackBarState
     const [selectedFiles, setSelectedFiles] = useState(undefined)
     const [currentFile, setCurrentFile] = useState(undefined)
     const [progress, setProgress] = useState(0)
@@ -39,40 +43,42 @@ export const RunCmdInput = (props) => {
         setSnackBarState({ ...snackBarState, open: false })
     }
     const snackbarOpen = (newState) => () => {
-
         setSnackBarState({ open: true, ...newState })
     }
     const dispatch = useDispatch()
     useEffect(() => {
-        if (!commandResponse) {
+        if (!fileUploadResponse) {
             return
         }
         if (
-            commandResponse &&
-            commandResponse.status === 'ok' &&
-            commandResponse.data.length > 0
+            fileUploadResponse &&
+            fileUploadResponse.status === 'ok' &&
+            fileUploadResponse.data.length > 0
         ) {
             setSnackBarState({
                 open: true,
                 vertical: 'top',
                 horizontal: 'right',
                 snackbarMsg: 'Command Run Successfully!!!',
-                type:'success'
+                type: 'success',
             })
-            setExecuteCmdList(commandResponse.data)
-        } else if (commandResponse && commandResponse.status === 'error') {
+            setExecuteCmdList(fileUploadResponse.data)
+        } else if (
+            fileUploadResponse &&
+            fileUploadResponse.status === 'error'
+        ) {
             setSnackBarState({
                 open: true,
                 vertical: 'top',
                 horizontal: 'right',
                 snackbarMsg: 'something wrong!!!',
-                type:'error'
+                type: 'error',
             })
             setProgress(0)
             setIsError(true)
         }
         setMessage('something wrong!!!')
-    }, [commandResponse])
+    }, [fileUploadResponse])
     const selectFile = (event) => {
         setSelectedFiles(event.target.files)
     }
@@ -82,11 +88,8 @@ export const RunCmdInput = (props) => {
         setCurrentFile(currentFile)
         setProgress(0)
         const formData = new FormData()
-        formData.append(
-            "file",
-            selectedFiles[0],
-            selectedFiles[0].name
-        );
+        formData.append('file', selectedFiles[0], selectedFiles[0].name)
+        dispatch(runScriptFromFileReset())
         dispatch(
             runScriptFromFile(formData, (event) => {
                 setProgress(Math.round((100 * event.loaded) / event.total))
@@ -105,6 +108,7 @@ export const RunCmdInput = (props) => {
 
     return (
         <Grid container spacing={6}>
+            {loading ? <CircularProgress className="progress" /> : ''}
             <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: 2 }}>
                 {currentFile && (
                     <Box className="mb25" display="flex" alignItems="center">
@@ -180,13 +184,18 @@ export const RunCmdInput = (props) => {
                         ))}
                 </ul>
             </Grid>
-            <Snackbar open={open} autoHideDuration={6000} onClose={snackbarClose} anchorOrigin={{ vertical, horizontal }}>
+            <Snackbar
+                open={open}
+                autoHideDuration={6000}
+                onClose={snackbarClose}
+                anchorOrigin={{ vertical, horizontal }}
+            >
                 <Alert
                     onClose={snackbarClose}
                     severity={type}
                     sx={{ width: '100%' }}
                 >
-                   {snackbarMsg}
+                    {snackbarMsg}
                 </Alert>
             </Snackbar>
         </Grid>

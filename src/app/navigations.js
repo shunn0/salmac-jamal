@@ -1,18 +1,12 @@
 export const navigations = [
     {
-        name: 'Connected Servers',
-        path: '/serverList/serverlist',
-        //path: '/runcmd/default',
+        name: 'List Of Agents',
+        path: '/agent/agentlist',
         icon: 'dashboard',
     },
     {
-        name: 'Run command',
-        path: '/runcmd/default',
+        name: 'List of Scripts',
+        path: '/script/scriptList',
         icon: 'dashboard',
     },
-    {
-        name: 'Run by File',
-        path: '/runcmd-input-file/runbyfile',
-        icon: 'dashboard',
-    }
 ]

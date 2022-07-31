@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
+    LinearProgress,
+    CircularProgress,
     Button,
     Icon,
     Grid,
@@ -8,14 +10,17 @@ import {
     Snackbar,
     Alert,
     Typography,
-    ListItem
+    ListItem,
 } from '@mui/material'
 import { Span } from 'app/components/Typography'
 import { Breadcrumb, SimpleCard } from 'app/components'
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator'
 import { Box, styled } from '@mui/system'
-import { runScriptCmd } from 'app/redux/actions/RunCommandActions'
-import {ArrowDropDown} from "@mui/icons-material";
+import {
+    runScriptCmd,
+    runScriptCmdReset,
+} from 'app/redux/actions/RunCommandActions'
+import { ArrowDropDown } from '@mui/icons-material'
 
 const Container = styled('div')(({ theme }) => ({
     margin: '30px',
@@ -31,8 +36,9 @@ const Container = styled('div')(({ theme }) => ({
 }))
 
 const RunCmd = () => {
+    const loading = useSelector((state) => state.runCommandReducer.loading)
     const commandResponse = useSelector(
-        (state) => state.runCommand.commandResponse
+        (state) => state.runCommandReducer.commandResponse
     )
     const [state, setState] = useState({})
     const [snackBarState, setSnackBarState] = React.useState({
@@ -87,6 +93,7 @@ const RunCmd = () => {
     const handleSubmit = (event) => {
         try {
             if (state.multicmd) {
+                dispatch(runScriptCmdReset())
                 dispatch(runScriptCmd(state.multicmd))
             } else {
                 setSnackBarState({
@@ -107,17 +114,16 @@ const RunCmd = () => {
             })
         }
     }
-    const {
-        multicmd,
-    } = state
+    const { multicmd } = state
     return (
         <Container>
-            <div className="breadcrumb">
+            {/* <div className="breadcrumb">
                 <Breadcrumb
                     routeSegments={[{ name: 'Run by Text', path: '/' }]}
                 />
-            </div>
+            </div> */}
             <SimpleCard title="Run CMD !">
+                {loading ? <LinearProgress /> : ''}
                 <ValidatorForm onSubmit={handleSubmit} onError={() => null}>
                     <Grid container spacing={6}>
                         <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>

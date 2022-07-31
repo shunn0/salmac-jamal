@@ -1,14 +1,13 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
-import runCmdRoutes from './views/runcmd/RunCmdRoutes'
-import runCmdInputRoutes from './views/runcmd-input-file/RunCmdInputRoutes'
-import serverListRoutes from './views/serverList/ServerListRoutes'
+import agentRoutes from './views/agents/AgentRoutes'
+import scriptListRoutes from './views/scripts/ScriptListRoutes'
 
 const redirectRoute = [
     {
         path: '/',
         exact: true,
-        component: () => <Redirect to="/runcmd/default" />,
+        component: () => <Redirect to="/runcmd/agentlist" />,
     },
 ]
 
@@ -19,9 +18,8 @@ const errorRoute = [
 ]
 
 const routes = [
-    ...runCmdRoutes,
-    ...runCmdInputRoutes,
-    ...serverListRoutes,
+    ...agentRoutes,
+    ...scriptListRoutes,
     ...redirectRoute,
     ...errorRoute,
 ]
