@@ -94,7 +94,7 @@ const RunCmd = () => {
         try {
             if (state.multicmd) {
                 dispatch(runScriptCmdReset())
-                dispatch(runScriptCmd(state.multicmd))
+                dispatch(runScriptCmd(state.multicmd, 'http://34.125.135.255:8080'))
             } else {
                 setSnackBarState({
                     open: true,

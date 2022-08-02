@@ -93,7 +93,7 @@ export const RunCmdInput = (props) => {
         dispatch(
             runScriptFromFile(formData, (event) => {
                 setProgress(Math.round((100 * event.loaded) / event.total))
-            })
+            }, 'http://34.125.135.255:8080')
         )
     }
     const getFileDetails = (selectedFiles) => {

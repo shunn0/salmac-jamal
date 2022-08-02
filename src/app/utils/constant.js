@@ -3,4 +3,5 @@ export const sideNavWidth = 260
 export const navbarHeight = 60
 export const sidenavCompactWidth = 80
 export const containedLayoutWidth = 1200
+//export const apiUrl = 'http://localhost:8080'
 export const apiUrl = 'http://18.134.230.168:8080'

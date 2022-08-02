@@ -23,9 +23,9 @@ export const addEditScript = (formData,type) => {
     console.log(formData);
     let newUrl =apiUrl;
     if(type==="put" || type==="get"){
-        newUrl= apiUrl + '/script/'+formData.id;
+        newUrl= apiUrl + '/server/script/'+formData.id;
     }else{
-        newUrl= apiUrl + '/script';
+        newUrl= apiUrl + '/server/script';
     }
     return (dispatch) => {
         dispatch({

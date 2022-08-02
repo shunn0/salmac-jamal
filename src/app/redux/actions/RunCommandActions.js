@@ -18,11 +18,11 @@ export const runScriptCmdReset=()=>{
         });
     }
 }
-export const runScriptCmd = (cmdData) => (dispatch) => {
+export const runScriptCmd = (cmdData, selectedServer) => (dispatch) => {
     dispatch({
         type: RUN_CMD_DATA_INIT
     });
-    axios.post(apiUrl + '/runmulticmd', cmdData).then((res) => {
+    axios.post(selectedServer + '/runmulticmd', cmdData).then((res) => {
         dispatch({
             type: RUN_CMD_DATA,
             payload: { data: res.data, status: 'ok' },
@@ -42,13 +42,13 @@ export const runScriptFromFileReset=()=>{
         });
     }
 }
-export const runScriptFromFile = (formData, onUploadProgress) => {
+export const runScriptFromFile = (formData, onUploadProgress, selectedServer) => {
     return (dispatch) => {
         dispatch({
             type: RUN_UPLOAD_FILE_DATA_INIT
         });
         axios
-            .post(apiUrl + '/runscript', formData, { onUploadProgress })
+            .post(selectedServer + '/runscript', formData, { onUploadProgress })
             .then((res) => {
                 dispatch({
                     type: RUN_UPLOAD_FILE_DATA,
