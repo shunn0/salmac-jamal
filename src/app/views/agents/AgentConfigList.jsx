@@ -45,7 +45,8 @@ const configList = [
     },
 ]
 
-const AgentConfigList = () => {
+const AgentConfigList = (props) => {
+    const {agentData} = props;
     return (
         <Box width="100%" overflow="auto">
             <Grid container spacing={6}>

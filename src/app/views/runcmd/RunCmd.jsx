@@ -35,7 +35,8 @@ const Container = styled('div')(({ theme }) => ({
     },
 }))
 
-const RunCmd = () => {
+const RunCmd = (props) => {
+    const { agentData } = props
     const loading = useSelector((state) => state.runCommandReducer.loading)
     const commandResponse = useSelector(
         (state) => state.runCommandReducer.commandResponse
@@ -94,7 +95,14 @@ const RunCmd = () => {
         try {
             if (state.multicmd) {
                 dispatch(runScriptCmdReset())
-                dispatch(runScriptCmd(state.multicmd, 'http://34.125.135.255:8080'))
+                dispatch(
+                    runScriptCmd(
+                        state.multicmd,
+                        agentData.ip
+                            ? 'http://' + agentData.ip
+                            : 'http://34.125.135.255:8080'
+                    )
+                )
             } else {
                 setSnackBarState({
                     open: true,
@@ -117,13 +125,14 @@ const RunCmd = () => {
     const { multicmd } = state
     return (
         <Container>
-            {/* <div className="breadcrumb">
-                <Breadcrumb
-                    routeSegments={[{ name: 'Run by Text', path: '/' }]}
-                />
-            </div> */}
             <SimpleCard title="Run CMD !">
-                {loading ? <LinearProgress /> : ''}
+                {loading ? (
+                    <div className="hover-custom ">
+                        <CircularProgress className="progress" />{' '}
+                    </div>
+                ) : (
+                    ''
+                )}
                 <ValidatorForm onSubmit={handleSubmit} onError={() => null}>
                     <Grid container spacing={6}>
                         <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>

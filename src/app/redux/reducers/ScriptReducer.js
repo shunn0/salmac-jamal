@@ -28,6 +28,7 @@ const ScriptReducer = function (state = initialState, action) {
             return {
                 ...state,
                 scriptListResponse: { ...action.payload },
+                loading:false,
             }
         }
         case SCRIPT_LIST_DATA_ERROR: {

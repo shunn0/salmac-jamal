@@ -6,12 +6,17 @@ import {
     RUN_UPLOAD_FILE_DATA_INIT,
     RUN_UPLOAD_FILE_DATA,
     RRUN_UPLOAD_FILE_DATA_ERROR,
-    RUN_UPLOAD_FILE_DATA_RESET
+    RUN_UPLOAD_FILE_DATA_RESET,
+    AVAILABLE_OS_FILE_DATA_INIT,
+    AVAILABLE_OS_FILE_DATA_SUCCESS,
+    AVAILABLE_OS_FILE_DATA_ERROR,
+    AVAILABLE_OS_FILE_DATA_RESET
 } from '../actions/RunCommandActions'
 
 const initialState = {
     commandResponse:null,
     fileUploadResponse:null,
+    availableFileOnOsResponse:null,
     loading:false,
 }
 
@@ -70,6 +75,37 @@ const RunCommandReducer = function (state = initialState, action) {
             return {
                 ...state,
                 fileUploadResponse: {...action.payload},
+                loading:false,
+            }
+        }
+
+
+        case AVAILABLE_OS_FILE_DATA_INIT: {
+            return {
+                ...state,
+                availableFileOnOsResponse: null,
+                loading:true,
+            }
+        }
+        case AVAILABLE_OS_FILE_DATA_ERROR: {
+            return {
+                ...state,
+                availableFileOnOsResponse: {...action.payload},
+                loading:false,
+            }
+        }
+        case AVAILABLE_OS_FILE_DATA_RESET: {
+            return {
+                ...state,
+                availableFileOnOsResponse: null,
+                loading:false,
+            }
+        }
+        case AVAILABLE_OS_FILE_DATA_SUCCESS: {
+            return {
+                ...state,
+                availableFileOnOsResponse: {...action.payload},
+                loading:false,
             }
         }
      

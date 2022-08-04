@@ -11,6 +11,11 @@ export const RUN_UPLOAD_FILE_DATA = 'RUN_UPLOAD_FILE_DATA'
 export const RRUN_UPLOAD_FILE_DATA_ERROR = 'RRUN_UPLOAD_FILE_DATA_ERROR'
 export const RUN_UPLOAD_FILE_DATA_RESET = 'RUN_UPLOAD_FILE_DATA_RESET'
 
+export const AVAILABLE_OS_FILE_DATA_INIT = 'AVAILABLE_OS_FILE_DATA_INIT'
+export const AVAILABLE_OS_FILE_DATA_SUCCESS = 'AVAILABLE_OS_FILE_DATA_SUCCESS'
+export const AVAILABLE_OS_FILE_DATA_ERROR = 'AVAILABLE_OS_FILE_DATA_ERROR'
+export const AVAILABLE_OS_FILE_DATA_RESET = 'AVAILABLE_OS_FILE_DATA_RESET'
+
 export const runScriptCmdReset=()=>{
     return (dispatch) => {
         dispatch({
@@ -62,4 +67,30 @@ export const runScriptFromFile = (formData, onUploadProgress, selectedServer) =>
                 })
             })
     }
+}
+
+
+export const getAvailableFileOnOsReset=()=>{
+    return (dispatch) => {
+        dispatch({
+            type: AVAILABLE_OS_FILE_DATA_RESET
+        });
+    }
+}
+export const getAvailableFileOnOs = (os) => (dispatch) => {
+    dispatch({
+        type: AVAILABLE_OS_FILE_DATA_INIT
+    })
+    axios.get(apiUrl + '/server/script/byos/'+os).then((res) => {
+        dispatch({
+            type: AVAILABLE_OS_FILE_DATA_SUCCESS,
+            payload: { data: res.data, status: 'ok' },
+        })
+    })
+        .catch((err) => {
+            dispatch({
+                type: AVAILABLE_OS_FILE_DATA_ERROR,
+                payload: { data: err, status: 'error' },
+            })
+        })
 }

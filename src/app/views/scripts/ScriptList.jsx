@@ -45,10 +45,10 @@ const Container = styled('div')(({ theme }) => ({
 }))
 
 const ScriptList = () => {
-    const loading = useSelector((state) => state.scriptReducer.loading);
+    const loading = useSelector((state) => state.scriptReducer.loading)
     const scriptListResponse = useSelector(
         (state) => state.scriptReducer.scriptListResponse
-    );
+    )
     const dispatch = useDispatch()
     const [snackBarState, setSnackBarState] = React.useState({
         open: false,
@@ -124,7 +124,9 @@ const ScriptList = () => {
                         color="primary"
                         variant="contained"
                         type="button"
-                        onClick={()=>{onAddUpdateShowModal()}}
+                        onClick={() => {
+                            onAddUpdateShowModal()
+                        }}
                     >
                         <Icon>add_circle</Icon>
                         <Span sx={{ pl: 1, textTransform: 'capitalize' }}>
@@ -134,7 +136,13 @@ const ScriptList = () => {
                 </div>
                 <Box width="100%" overflow="auto">
                     <StyledTable>
-                        {loading ? <LinearProgress /> : ''}
+                        {loading ? (
+                            <div className="hover-custom ">
+                                <CircularProgress className="progress" />{' '}
+                            </div>
+                        ) : (
+                            ''
+                        )}
                         <TableHead>
                             <TableRow>
                                 <TableCell>Name</TableCell>

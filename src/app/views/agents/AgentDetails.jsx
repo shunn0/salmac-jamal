@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
 import {
     Box,
     Tabs,
@@ -17,11 +18,13 @@ import {
     LinearProgress,
     CircularProgress,
     Typography,
+    Breadcrumbs,
 } from '@mui/material'
 import { Breadcrumb, SimpleCard } from 'app/components'
 import RunCmd from '../runcmd/RunCmd'
 import RunCmdInputFile from '../runcmd-input-file/RunCmdInputFile'
 import AgentConfigList from './AgentConfigList'
+import RunCmdInput from '../runcmd-input-file/RunCmdInput'
 
 const StyledTable = styled(Table)(() => ({
     whiteSpace: 'pre',
@@ -47,7 +50,6 @@ const Container = styled('div')(({ theme }) => ({
 }))
 function TabPanel(props) {
     const { children, value, index, ...other } = props
-
     return (
         <div
             role="tabpanel"
@@ -72,17 +74,32 @@ function a11yProps(index) {
 }
 const AgentDetails = (props) => {
     const [value, setValue] = React.useState(0)
-
+    const location = useLocation()
+    const { agentData } = location.state
     const handleChange = (event, newValue) => {
         setValue(newValue)
     }
     return (
         <Container>
-            <div className="breadcrumb">
-                <Breadcrumb
-                    routeSegments={[{ name: 'Agent Details', path: '/' }]}
-                />
-            </div>
+            {agentData ? (
+                <div className="breadcrumb">
+                    <Breadcrumb
+                        routeSegments={[
+                            {
+                                name: 'List of Agents',
+                                path: '/agent/agentlist',
+                            },
+                            {
+                                name:
+                                    agentData.name + ' (' + agentData.ip + ')',
+                                path: '/',
+                            },
+                        ]}
+                    />
+                </div>
+            ) : (
+                ''
+            )}
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs
                     value={value}
@@ -95,13 +112,17 @@ const AgentDetails = (props) => {
                 </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
-                <AgentConfigList/>
+                <AgentConfigList />
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <RunCmd />
+                {agentData ? <RunCmd agentData={agentData} /> : ''}
             </TabPanel>
             <TabPanel value={value} index={2}>
-                <RunCmdInputFile/>
+                {agentData ? (
+                    <RunCmdInput agentData={agentData} isInputFile={true} />
+                ) : (
+                    ''
+                )}
             </TabPanel>
         </Container>
     )

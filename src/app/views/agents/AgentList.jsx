@@ -45,7 +45,7 @@ const Container = styled('div')(({ theme }) => ({
 }))
 
 const AgentList = () => {
-    const loading = useSelector((state) => state.scriptReducer.loading)
+    const loading = useSelector((state) => state.agentReducer.loading)
     const agentListResponse = useSelector(
         (state) => state.agentReducer.agentListResponse
     )
@@ -139,7 +139,13 @@ const AgentList = () => {
 
                 <Box width="100%" overflow="auto">
                     <StyledTable>
-                        {loading ? <LinearProgress /> : ''}
+                        {loading ? (
+                            <div className="hover-custom ">
+                                <CircularProgress className="progress" />{' '}
+                            </div>
+                        ) : (
+                            ''
+                        )}
                         <TableHead>
                             <TableRow>
                                 <TableCell>Name(If any)</TableCell>
@@ -170,16 +176,17 @@ const AgentList = () => {
                                     }}
                                 >
                                     <Tooltip title={row.name}>
-                                        <TableCell align={'left'}>
-                                            <Link
-                                                className="anchor-link"
-                                                to={
-                                                    '/agent/agentdetails/' +
-                                                    row.id
-                                                }
-                                            >
-                                                {row.name}
-                                            </Link>
+                                        <TableCell
+                                            className="anchor-link"
+                                            align={'left'}
+                                            onClick={() => {
+                                                onAddUpdateShowModal(
+                                                    row,
+                                                    'EDIT'
+                                                )
+                                            }}
+                                        >
+                                            {row.name}
                                         </TableCell>
                                     </Tooltip>
                                     {getCommonRow(row.ip, 'center')}
@@ -188,27 +195,50 @@ const AgentList = () => {
                                     {getCommonRow(row.latestUptime, 'center')}
                                     {getCommonRow(row.latestDowntime, 'center')}
                                     <TableCell align="right">
-                                        <Tooltip title="Delete Agent">
-                                            <IconButton
-                                                onClick={() => {
-                                                    onAddUpdateShowModal(
-                                                        row,
-                                                        'EDIT'
-                                                    )
-                                                }}
-                                            >
-                                                <Icon color="secondary">
-                                                    edit
-                                                </Icon>
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title="Delete Agent">
-                                            <IconButton>
-                                                <Icon color="error">
-                                                    delete
-                                                </Icon>
-                                            </IconButton>
-                                        </Tooltip>
+                                        {row.status === 'Active' ? (
+                                            <Tooltip title="Connect Agent">
+                                                <Link
+                                                    className="anchor-link"
+                                                    to={
+                                                        '/agent/agentdetails/' +
+                                                        row.id
+                                                    }
+                                                    state={{ agentData: row }}
+                                                >
+                                                    <IconButton
+                                                        style={{
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <Icon
+                                                            color="primary"
+                                                            style={{
+                                                                color: 'green',
+                                                            }}
+                                                        >
+                                                            link
+                                                        </Icon>
+                                                    </IconButton>
+                                                </Link>
+                                            </Tooltip>
+                                        ) : (
+                                            <Tooltip title="Not Able to Connect Agent">
+                                                <IconButton
+                                                    style={{
+                                                        cursor: 'pointer',
+                                                    }}
+                                                >
+                                                    <Icon
+                                                        color="primary"
+                                                        style={{
+                                                            color: 'grey',
+                                                        }}
+                                                    >
+                                                        link
+                                                    </Icon>
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}

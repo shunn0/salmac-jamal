@@ -28,6 +28,7 @@ const AgentReducer = function (state = initialState, action) {
             return {
                 ...state,
                 agentListResponse: { ...action.payload },
+                loading:false,
             }
         }
         case AGENT_LIST_DATA_ERROR: {

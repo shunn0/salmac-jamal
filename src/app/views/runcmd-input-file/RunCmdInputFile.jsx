@@ -16,14 +16,15 @@ const Container = styled('div')(({ theme }) => ({
     },
 }))
 
-const RunCmdInputFile = () => {
+const RunCmdInputFile = (props) => {
+    const {agentData} = props;
     return (
         <Container>
             {/* <div className="breadcrumb">
                 <Breadcrumb routeSegments={[{ name: 'Run by File', path: '/' }]} />
             </div> */}
             <SimpleCard title="Run From File !">
-                <RunCmdInput />
+                {agentData ? <RunCmdInput agentData={agentData} isInputFile={true}/> :""}
             </SimpleCard>
             <Box py="12px" />
         </Container>
