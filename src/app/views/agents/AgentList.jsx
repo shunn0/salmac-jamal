@@ -124,17 +124,6 @@ const AgentList = () => {
                         gap: '1rem',
                     }}
                 >
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        type="button"
-                        onClick={onAddUpdateShowModal}
-                    >
-                        <Icon>add_circle</Icon>
-                        <Span sx={{ pl: 1, textTransform: 'capitalize' }}>
-                            Add New Agent
-                        </Span>
-                    </Button>
                 </div>
 
                 <Box width="100%" overflow="auto">

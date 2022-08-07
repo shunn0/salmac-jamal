@@ -146,7 +146,6 @@ const ScriptList = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell>Name</TableCell>
-                                <TableCell align="left">Purpose</TableCell>
                                 <TableCell align="center">
                                     Operating System&nbsp;(g)
                                 </TableCell>
@@ -171,9 +170,6 @@ const ScriptList = () => {
                                     <TableCell component="th" scope="row">
                                         {row.name}
                                     </TableCell>
-                                    <TableCell align="left">
-                                        {row.purpose}
-                                    </TableCell>
                                     <TableCell align="center">
                                         {row.targetOS}
                                     </TableCell>
@@ -181,7 +177,7 @@ const ScriptList = () => {
                                         {row.status}
                                     </TableCell>
                                     <TableCell align="center">
-                                        {row.updatetime}
+                                        {row.lastUpdateTime}
                                     </TableCell>
                                 </TableRow>
                             ))}

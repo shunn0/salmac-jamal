@@ -19,7 +19,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
 import { Span } from 'app/components/Typography'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator'
 import {
     addEditScript,
@@ -29,6 +29,8 @@ import {
 export default function AddUpdateScriptModal(props) {
     const { showModal, onClose, onSubmit, modalData, modalMode } = props
     const [formData, setFormData] = useState({})
+    const [selectedFiles, setSelectedFiles] = useState(undefined)
+
     const TextField = styled(TextValidator)(() => ({
         width: '100%',
         marginBottom: '16px',
@@ -53,9 +55,34 @@ export default function AddUpdateScriptModal(props) {
     const handleChange = (event) => {
         event.persist()
         const data = { ...formData }
-        data[event.target.name] = event.target.value
+        //data[event.target.name] = "AAAAA"//event.target.value
         setFormData(data)
     }
+
+    const selectFile = (event) => {
+        setSelectedFiles(event.target.files)
+        // const data = { ...formData }
+        // data[event.target.name] = "File selec3d"
+        // //const formData = new FormData()
+        // //formData.append('file', selectedFiles[0], selectedFiles[0].name)
+        // //formData[event.target.name] = "Lala"
+        // setFormData(data)
+    }
+
+    const getFileDetails = (selectedFile) => {
+        const data = { ...formData }
+        //data[event.target.name] = selectedFile.name
+        //setFormData(data)
+        console.log(data)
+        return (
+            <div>
+                <h5>File Details:</h5>
+                <p>File Name: {selectedFile.name}</p>
+                <p>File Type: {selectedFile.type}</p>
+            </div>
+        )
+    }
+
     return (
         <Box>
             <Dialog
@@ -64,7 +91,7 @@ export default function AddUpdateScriptModal(props) {
                 aria-labelledby="form-dialog-title"
             >
                 <DialogTitle id="form-dialog-title">
-                    Agent{' '}
+                    New Script{' '}
                     <Tooltip title="Delete Agent">
                         <IconButton
                             style={{
@@ -96,6 +123,34 @@ export default function AddUpdateScriptModal(props) {
                                     xs={12}
                                     sx={{ mt: 2 }}
                                 >
+                                    <Box mt={2} mb={2}>
+                                        <label htmlFor="btn-upload">
+                                            <input
+                                                id="btn-upload"
+                                                name="file"
+                                                value={formData.file || ''}
+                                                style={{ display: 'none' }}
+                                                type="file"
+                                                onChange={selectFile}
+                                            />
+                                            <Button
+                                                className="btn-choose"
+                                                variant="outlined"
+                                                component="span"
+                                            >
+                                                Choose Files
+                                            </Button>
+                                        </label>
+
+                                    </Box>
+                                    <Box mt={2} mb={2}>
+                                        <div className="file-name">
+                                            {selectedFiles && selectedFiles.length > 0
+                                                ? getFileDetails(selectedFiles[0])
+                                                : null}
+                                        </div>
+                                    </Box>
+
                                     <TextField
                                         type="text"
                                         name="name"
