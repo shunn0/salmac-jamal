@@ -34,7 +34,7 @@ export const addEditAgent = (formData,type) => {
             .catch((err) => {
                 dispatch({
                     type: ADD_EDIT_DELETE_AGENT_DATA_ERROR,
-                    payload: { data: err, status: 'error' },
+                    payload: { data: err && err.response && err.response.data ? err.response.data : err , status: 'error' },
                 })
             })
     }
@@ -54,7 +54,7 @@ export const deleteAgent = (id) => {
             .catch((err) => {
                 dispatch({
                     type: ADD_EDIT_DELETE_AGENT_DATA_ERROR,
-                    payload: { data: err, status: 'error' },
+                    payload: { data: err && err.response && err.response.data ? err.response.data : err , status: 'error' },
                 })
             })
     }
@@ -79,7 +79,7 @@ export const getAgentList = () => (dispatch) => {
         .catch((err) => {
             dispatch({
                 type: AGENT_LIST_DATA_ERROR,
-                payload: { data: err, status: 'error' },
+                payload: { data: err && err.response && err.response.data ? err.response.data : err , status: 'error' },
             })
         })
 }

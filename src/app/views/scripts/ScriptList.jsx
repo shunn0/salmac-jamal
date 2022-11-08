@@ -12,8 +12,10 @@ import {
     TablePagination,
     TableRow,
     Button,
-    LinearProgress,
     CircularProgress,
+    Tooltip,
+    Snackbar,
+    Alert,
 } from '@mui/material'
 import { Span } from 'app/components/Typography'
 import { Breadcrumb, SimpleCard } from 'app/components'
@@ -21,7 +23,11 @@ import AddUpdateScriptModal from './modal/AddUpdateScriptModal'
 import {
     getScriptList,
     getScriptListReset,
+    deleteScript,
+    addEditScriptReset,
+    getScriptById,
 } from 'app/redux/actions/ScriptAction'
+import ConfirmDialog from './modal/confirm-dialog'
 const StyledTable = styled(Table)(() => ({
     whiteSpace: 'pre',
     '& thead': {
@@ -49,6 +55,12 @@ const ScriptList = () => {
     const scriptListResponse = useSelector(
         (state) => state.scriptReducer.scriptListResponse
     )
+    const addEditScriptResponse = useSelector(
+        (state) => state.scriptReducer.addEditScriptResponse
+    )
+    const getScriptResponse = useSelector(
+        (state) => state.scriptReducer.getScriptResponse
+    )
     const dispatch = useDispatch()
     const [snackBarState, setSnackBarState] = React.useState({
         open: false,
@@ -57,9 +69,11 @@ const ScriptList = () => {
         snackbarMsg: '',
         type: 'success',
     })
+    const { vertical, horizontal, open, snackbarMsg, type } = snackBarState
     const [showModal, setShowModal] = React.useState(false)
+    const [showConfirmModal, setShowConfirmModal] = React.useState(false)
     const [modalData, setModalData] = React.useState(null)
-    const [modalMode, setModalMode] = React.useState('NEW')
+    const [modalMode, setModalMode] = React.useState(null)
     const [progress, setProgress] = useState(0)
     const [isError, setIsError] = useState(false)
     const [message, setMessage] = useState('')
@@ -87,7 +101,10 @@ const ScriptList = () => {
                 open: true,
                 vertical: 'top',
                 horizontal: 'right',
-                snackbarMsg: 'something wrong!!!',
+                snackbarMsg:
+                    scriptListResponse.data && scriptListResponse.data.message
+                        ? scriptListResponse.data.message
+                        : 'something wrong!!!',
                 type: 'error',
             })
             setProgress(0)
@@ -95,16 +112,100 @@ const ScriptList = () => {
         }
         setMessage('something wrong!!!')
     }, [scriptListResponse])
-
+    useEffect(() => {
+        if (!addEditScriptResponse) {
+            return
+        }
+        if (addEditScriptResponse && addEditScriptResponse.status === 'ok') {
+            setSnackBarState({
+                open: true,
+                vertical: 'top',
+                horizontal: 'right',
+                snackbarMsg: 'Operation Success',
+                type: 'success',
+            })
+            dispatch(getScriptListReset())
+            dispatch(getScriptList())
+            onCloseModal()
+        } else if (
+            addEditScriptResponse &&
+            addEditScriptResponse.status === 'error'
+        ) {
+            console.log(addEditScriptResponse)
+            setSnackBarState({
+                open: true,
+                vertical: 'top',
+                horizontal: 'right',
+                snackbarMsg:
+                    addEditScriptResponse.data &&
+                    addEditScriptResponse.data.message
+                        ? addEditScriptResponse.data.message
+                        : 'something wrong!!!',
+                type: 'error',
+            })
+            setProgress(0)
+            setIsError(true)
+        }
+        setMessage('something wrong!!!')
+    }, [addEditScriptResponse])
+    useEffect(() => {
+        if (!getScriptResponse) {
+            return
+        }
+        if (getScriptResponse && getScriptResponse.status === 'ok') {
+            setModalData(getScriptResponse.data)
+            setShowModal(true)
+        } else if (getScriptResponse && getScriptResponse.status === 'error') {
+            setSnackBarState({
+                open: true,
+                vertical: 'top',
+                horizontal: 'right',
+                snackbarMsg:
+                    getScriptResponse.data && getScriptResponse.data.message
+                        ? getScriptResponse.data.message
+                        : 'something wrong!!!',
+                type: 'error',
+            })
+            setProgress(0)
+            setIsError(true)
+        }
+        setMessage('something wrong!!!')
+    }, [getScriptResponse])
     const onAddUpdateShowModal = (data, type) => {
+        if (data && data.id && type) {
+            setModalMode(type)
+            dispatch(addEditScriptReset())
+            dispatch(getScriptById(data.id))
+        }else{
+            setModalMode(type)
+            setShowModal(true)
+        }
+    }
+    const onCloseModal = () => {
+        setShowModal(false)
+        setShowConfirmModal(false)
+        setModalMode(null)
+        setModalData(null)
+    }
+    const onShowConfirmModal = (data, type) => {
         if (data) setModalData(data)
         if (type) setModalMode(type)
-        setShowModal(true)
-    }
-    const onAddUpdateCloseModal = () => {
-        setShowModal(false)
+        setShowConfirmModal(true)
     }
     const onAddUpdate = () => {}
+    const onScriptDelete = () => {
+        if (modalData && modalData.id) {
+            dispatch(addEditScriptReset())
+            dispatch(deleteScript(modalData.id))
+            onCloseModal();
+        }
+    }
+    function snackbarClose() {
+        setSnackBarState({ ...snackBarState, open: false })
+    }
+    const snackbarOpen = (newState) => () => {
+        setSnackBarState({ open: true, ...newState })
+    }
     return (
         <Container>
             <div className="breadcrumb">
@@ -125,7 +226,7 @@ const ScriptList = () => {
                         variant="contained"
                         type="button"
                         onClick={() => {
-                            onAddUpdateShowModal()
+                            onAddUpdateShowModal(null, 'NEW')
                         }}
                     >
                         <Icon>add_circle</Icon>
@@ -155,6 +256,9 @@ const ScriptList = () => {
                                 <TableCell align="center">
                                     Update Time
                                 </TableCell>
+                                <TableCell align="right">
+                                    Action
+                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -179,6 +283,39 @@ const ScriptList = () => {
                                     <TableCell align="center">
                                         {row.lastUpdateTime}
                                     </TableCell>
+                                    <TableCell align="right">
+                                        <Tooltip title="Connect Agent">
+                                            <IconButton
+                                                style={{
+                                                    cursor: 'pointer',
+                                                }}
+                                                onClick={() => {
+                                                    onAddUpdateShowModal(
+                                                        row,
+                                                        'EDIT'
+                                                    )
+                                                }}
+                                            >
+                                                <Icon color="primary">
+                                                    edit
+                                                </Icon>
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Connect Agent">
+                                            <IconButton
+                                                style={{
+                                                    cursor: 'pointer',
+                                                }}
+                                                onClick={() => {
+                                                    onShowConfirmModal(row)
+                                                }}
+                                            >
+                                                <Icon color="secondary">
+                                                    delete
+                                                </Icon>
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -197,15 +334,37 @@ const ScriptList = () => {
                 /> */}
                 </Box>
             </SimpleCard>
-            {showModal ? (
+            {(modalMode==="EDIT" && modalData && showModal) || (modalMode==="NEW" && showModal) ? (
                 <AddUpdateScriptModal
                     showModal={showModal}
-                    onClose={onAddUpdateCloseModal}
+                    onClose={onCloseModal}
                     onSubmit={onAddUpdate}
-                    modalData={modalData}
-                    modalMode={modalMode}
+                    modalData={modalData || null}
+                    modalMode={modalMode || "NEW"}
                 />
             ) : null}
+            {showConfirmModal ? (
+                <ConfirmDialog
+                    showModal={showConfirmModal}
+                    onClose={onCloseModal}
+                    onConfirm={onScriptDelete}
+                    modalData={modalData}
+                />
+            ) : null}
+            <Snackbar
+                open={open}
+                autoHideDuration={6000}
+                onClose={snackbarClose}
+                anchorOrigin={{ vertical, horizontal }}
+            >
+                <Alert
+                    onClose={snackbarClose}
+                    severity={type}
+                    sx={{ width: '100%' }}
+                >
+                    {snackbarMsg}
+                </Alert>
+            </Snackbar>
         </Container>
     )
 }

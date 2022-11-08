@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import Select from 'react-select'
 import {
     LinearProgress,
     CircularProgress,
@@ -20,6 +19,8 @@ import {
     runScriptFromFileReset,
     getAvailableFileOnOs,
     getAvailableFileOnOsReset,
+    runServerScript,
+    runServerScriptReset,
 } from '../../redux/actions/RunCommandActions'
 import { SimpleCard } from 'app/components'
 //import UploadService from "../services/upload-files.service";
@@ -33,6 +34,9 @@ export const RunCmdInput = (props) => {
     const availableFileOnOsResponse = useSelector(
         (state) => state.runCommandReducer.availableFileOnOsResponse
     )
+    const runServerScriptResponse = useSelector(
+        (state) => state.runCommandReducer.runServerScriptResponse
+    )
     const [snackBarState, setSnackBarState] = React.useState({
         open: false,
         vertical: 'top',
@@ -41,7 +45,8 @@ export const RunCmdInput = (props) => {
         type: 'success',
     })
     const { vertical, horizontal, open, snackbarMsg, type } = snackBarState
-    const [availableOsFile, setAvailableOsFile] = useState([])
+    const [availableOsFiles, setAvailableOsFiles] = useState([])
+    const [serverScriptId, setServerScriptId] = useState(null)
     const [selectedFiles, setSelectedFiles] = useState(undefined)
     const [currentFile, setCurrentFile] = useState(undefined)
     const [progress, setProgress] = useState(0)
@@ -72,7 +77,7 @@ export const RunCmdInput = (props) => {
             availableFileOnOsResponse.status === 'ok' &&
             availableFileOnOsResponse.data.length > 0
         ) {
-            setAvailableOsFile(availableFileOnOsResponse.data)
+            setAvailableOsFiles(availableFileOnOsResponse.data)
         } else if (
             availableFileOnOsResponse &&
             availableFileOnOsResponse.status === 'error'
@@ -81,12 +86,21 @@ export const RunCmdInput = (props) => {
                 open: true,
                 vertical: 'top',
                 horizontal: 'right',
-                snackbarMsg: 'something wrong!!!',
+                snackbarMsg:
+                    availableFileOnOsResponse.data &&
+                    availableFileOnOsResponse.data.message
+                        ? availableFileOnOsResponse.data.message
+                        : 'something wrong!!!',
                 type: 'error',
             })
             setIsError(true)
         }
-        setMessage('something wrong!!!')
+        setMessage(
+            availableFileOnOsResponse.data &&
+                availableFileOnOsResponse.data.message
+                ? availableFileOnOsResponse.data.message
+                : 'something wrong!!!'
+        )
     }, [availableFileOnOsResponse])
     useEffect(() => {
         if (!fileUploadResponse) {
@@ -113,24 +127,77 @@ export const RunCmdInput = (props) => {
                 open: true,
                 vertical: 'top',
                 horizontal: 'right',
-                snackbarMsg: 'something wrong!!!',
+                snackbarMsg:
+                    fileUploadResponse.data && fileUploadResponse.data.message
+                        ? fileUploadResponse.data.message
+                        : 'something wrong!!!',
                 type: 'error',
             })
             setProgress(0)
             setIsError(true)
         }
-        setMessage('something wrong!!!')
+        setMessage(
+            fileUploadResponse.data && fileUploadResponse.data.message
+                ? fileUploadResponse.data.message
+                : 'something wrong!!!'
+        )
     }, [fileUploadResponse])
+
+    useEffect(() => {
+        if (!runServerScriptResponse) {
+            return
+        }
+        if (
+            runServerScriptResponse &&
+            runServerScriptResponse.status === 'ok'
+        ) {
+            setSnackBarState({
+                open: true,
+                vertical: 'top',
+                horizontal: 'right',
+                snackbarMsg: 'Command Run Successfully!!!',
+                type: 'success',
+            })
+            setExecuteCmdList(runServerScriptResponse.data)
+        } else if (
+            runServerScriptResponse &&
+            runServerScriptResponse.status === 'error'
+        ) {
+            setSnackBarState({
+                open: true,
+                vertical: 'top',
+                horizontal: 'right',
+                snackbarMsg:
+                    runServerScriptResponse.data &&
+                    runServerScriptResponse.data.message
+                        ? runServerScriptResponse.data.message
+                        : 'something wrong!!!',
+                type: 'error',
+            })
+            setProgress(0)
+            setIsError(true)
+        }
+        setMessage(
+            runServerScriptResponse.data && runServerScriptResponse.data.message
+                ? runServerScriptResponse.data.message
+                : 'something wrong!!!'
+        )
+    }, [runServerScriptResponse])
+
     const selectFile = (event) => {
         setSelectedFiles(event.target.files)
     }
-    const loadAvalableDropDow = () => {
+    const loadAvalableDropDownData = () => {
         const options = []
-        availableOsFile.map((data, index) => {
+        availableOsFiles.map((data, index) => {
+            if (index === 0) {
+                options.push({ value: '', label: 'Select' })
+            }
             options.push({ value: data.id, label: data.name })
         })
         return options
     }
+
     const runScriptFromUploadedFile = () => {
         let currentFile = selectedFiles[0]
         setCurrentFile(currentFile)
@@ -149,6 +216,23 @@ export const RunCmdInput = (props) => {
                     : 'http://34.125.135.255:8080'
             )
         )
+    }
+    const handleServerScriptIdChange = (e) => {
+        setServerScriptId(e.target.value)
+    }
+    const runScriptFromServer = () => {
+        if (serverScriptId) {
+            const data = { serverScriptId: parseInt(serverScriptId)}
+            dispatch(runServerScriptReset())
+            dispatch(
+                runServerScript(
+                    data,
+                    agentData.ip
+                        ? 'http://' + agentData.ip
+                        : 'http://34.125.135.255:8080'
+                )
+            )
+        }
     }
     const getFileDetails = (selectedFiles) => {
         return (
@@ -236,17 +320,33 @@ export const RunCmdInput = (props) => {
 
             <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
                 <SimpleCard title="Available Files">
-                    <Select options={loadAvalableDropDow()} />
+                    {/* <Select options={loadAvalableDropDow()} onChange={(e)=>handleServerScriptIdChange(e)} name="availableFile" value={serverScriptId || ""}/> */}
+                    <select
+                        onChange={(e) => handleServerScriptIdChange(e)}
+                        name="availableFile"
+                        value={serverScriptId || ''}
+                        className="form-select"
+                    >
+                        <option value="">Select</option>
+                        {availableOsFiles.map((data, index) => {
+                            return (
+                                <option key={'option-' + index} value={data.id}>
+                                    {data.name}
+                                </option>
+                            )
+                        })}
+                    </select>
                     <Box mt={2} mb={2}>
                         <Button
                             color="primary"
                             variant="contained"
                             type="button"
                             style={{ float: 'right' }}
+                            onClick={runScriptFromServer}
                         >
                             <Icon>send</Icon>
                             <Span sx={{ pl: 1, textTransform: 'capitalize' }}>
-                                Execute
+                                Execute Script
                             </Span>
                         </Button>
                     </Box>

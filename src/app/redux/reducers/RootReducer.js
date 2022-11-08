@@ -5,6 +5,7 @@ import NavigationReducer from './NavigationReducer'
 import RunCommandReducer from './RunCommandReducer'
 import AgentReducer from './AgentReducer'
 import ScriptReducer from './ScriptReducer'
+import AttackFxReducer from './AttackFxReducer'
 
 const RootReducer = combineReducers({
     notifications: NotificationReducer,
@@ -13,6 +14,7 @@ const RootReducer = combineReducers({
     runCommandReducer: RunCommandReducer,
     agentReducer: AgentReducer,
     scriptReducer: ScriptReducer,
+    attackFxReducer:AttackFxReducer,
 })
 
 export default RootReducer

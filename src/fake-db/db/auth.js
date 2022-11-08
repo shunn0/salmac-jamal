@@ -10,8 +10,8 @@ const userList = [
         role: 'SA',
         name: 'Zakaria',
         username: 'ZakariaDoe',
-        email: 'a@b.com',
-        avatar: '/assets/images/face-6.jpg',
+        email: 'zakaria@salmac-security.com',
+        avatar: '/assets/images/zakaria.png',
         age: 25,
     },
 ]

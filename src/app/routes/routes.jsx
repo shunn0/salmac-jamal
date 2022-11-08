@@ -1,6 +1,7 @@
 import AuthGuard from 'app/auth/AuthGuard'
 import NotFound from 'app/views/sessions/NotFound'
 import agentRoutes from 'app/views/agents/AgentRoutes'
+import attackFxRoutes from 'app/views/attackfx/AttackFxRoutes'
 import scriptListRoutes from 'app/views/scripts/ScriptListRoutes'
 import sessionRoutes from 'app/views/sessions/SessionRoutes'
 import MatxLayout from '../components/MatxLayout/MatxLayout'
@@ -14,7 +15,7 @@ export const AllPages = () => {
                     <MatxLayout />
                 </AuthGuard>
             ),
-            children: [...agentRoutes,...scriptListRoutes],
+            children: [...agentRoutes,...scriptListRoutes,...attackFxRoutes],
         },
         ...sessionRoutes,
         {

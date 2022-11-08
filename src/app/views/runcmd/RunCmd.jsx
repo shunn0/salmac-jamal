@@ -160,7 +160,7 @@ const RunCmd = (props) => {
                                 <Span
                                     sx={{ pl: 1, textTransform: 'capitalize' }}
                                 >
-                                    Submit
+                                    Execute Command
                                 </Span>
                             </Button>
                         </Grid>

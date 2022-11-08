@@ -16,44 +16,60 @@ export const AVAILABLE_OS_FILE_DATA_SUCCESS = 'AVAILABLE_OS_FILE_DATA_SUCCESS'
 export const AVAILABLE_OS_FILE_DATA_ERROR = 'AVAILABLE_OS_FILE_DATA_ERROR'
 export const AVAILABLE_OS_FILE_DATA_RESET = 'AVAILABLE_OS_FILE_DATA_RESET'
 
-export const runScriptCmdReset=()=>{
+export const RUN_SERVER_SCRIPT_INIT = 'RUN_SERVER_SCRIPT_INIT'
+export const RUN_SERVER_SCRIPT = 'RUN_SERVER_SCRIPT'
+export const RUN_SERVER_SCRIPT_RESET = 'RUN_SERVER_SCRIPT_RESET'
+export const RUN_SERVER_SCRIPT_ERROR = 'RUN_SERVER_SCRIPT_ERROR'
+
+export const runScriptCmdReset = () => {
     return (dispatch) => {
         dispatch({
-            type: RUN_CMD_DATA_RESET
-        });
+            type: RUN_CMD_DATA_RESET,
+        })
     }
 }
 export const runScriptCmd = (cmdData, selectedServer) => (dispatch) => {
     dispatch({
-        type: RUN_CMD_DATA_INIT
-    });
-    axios.post(selectedServer + '/runmulticmd', cmdData).then((res) => {
-        dispatch({
-            type: RUN_CMD_DATA,
-            payload: { data: res.data, status: 'ok' },
-        })
+        type: RUN_CMD_DATA_INIT,
     })
-    .catch((err) => {
-        dispatch({
-            type: RUN_CMD_DATA_ERROR,
-            payload: { data: err, status: 'error' },
+    axios
+        .post(selectedServer + '/runmulticmd', cmdData)
+        .then((res) => {
+            dispatch({
+                type: RUN_CMD_DATA,
+                payload: { data: res.data, status: 'ok' },
+            })
         })
-    })
+        .catch((err) => {
+            dispatch({
+                type: RUN_CMD_DATA_ERROR,
+                payload: {
+                    data:
+                        err && err.response && err.response.data
+                            ? err.response.data
+                            : err,
+                    status: 'error',
+                },
+            })
+        })
 }
-export const runScriptFromFileReset=()=>{
+export const runScriptFromFileReset = () => {
     return (dispatch) => {
         dispatch({
-            type: RUN_UPLOAD_FILE_DATA_RESET
-        });
+            type: RUN_UPLOAD_FILE_DATA_RESET,
+        })
     }
 }
-export const runScriptFromFile = (formData, onUploadProgress, selectedServer) => {
+export const runScriptFromFile = (
+    formData,
+    onUploadProgress,
+    selectedServer
+) => {
     return (dispatch) => {
         dispatch({
-            type: RUN_UPLOAD_FILE_DATA_INIT
-        });
-        axios
-            .post(selectedServer + '/runscript', formData, { onUploadProgress })
+            type: RUN_UPLOAD_FILE_DATA_INIT,
+        })
+        axios.post(selectedServer + '/runscript', formData, { onUploadProgress })
             .then((res) => {
                 dispatch({
                     type: RUN_UPLOAD_FILE_DATA,
@@ -63,34 +79,81 @@ export const runScriptFromFile = (formData, onUploadProgress, selectedServer) =>
             .catch((err) => {
                 dispatch({
                     type: RRUN_UPLOAD_FILE_DATA_ERROR,
-                    payload: { data: err, status: 'error' },
+                    payload: {
+                        data:
+                            err && err.response && err.response.data
+                                ? err.response.data
+                                : err,
+                        status: 'error',
+                    },
                 })
             })
     }
 }
 
-
-export const getAvailableFileOnOsReset=()=>{
+export const runServerScriptReset = () => {
     return (dispatch) => {
         dispatch({
-            type: AVAILABLE_OS_FILE_DATA_RESET
-        });
+            type: RUN_SERVER_SCRIPT_RESET,
+        })
+    }
+}
+export const runServerScript = (data, selectedServer) => (dispatch) => {
+    dispatch({
+        type: RUN_SERVER_SCRIPT_INIT,
+    });
+    axios
+        .post(selectedServer + '/runserverscript?serverScriptId='+ data.serverScriptId)
+        .then((res) => {
+            dispatch({
+                type: RUN_SERVER_SCRIPT,
+                payload: { data: res.data, status: 'ok' },
+            })
+        })
+        .catch((err) => {
+            console.log(err)
+            dispatch({
+                type: RUN_SERVER_SCRIPT_ERROR,
+                payload: {
+                    data:
+                        err && err.response && err.response.data
+                            ? err.response.data
+                            : err,
+                    status: 'error',
+                },
+            })
+        })
+}
+
+export const getAvailableFileOnOsReset = () => {
+    return (dispatch) => {
+        dispatch({
+            type: AVAILABLE_OS_FILE_DATA_RESET,
+        })
     }
 }
 export const getAvailableFileOnOs = (os) => (dispatch) => {
     dispatch({
-        type: AVAILABLE_OS_FILE_DATA_INIT
+        type: AVAILABLE_OS_FILE_DATA_INIT,
     })
-    axios.get(apiUrl + '/server/script/byos/'+os).then((res) => {
-        dispatch({
-            type: AVAILABLE_OS_FILE_DATA_SUCCESS,
-            payload: { data: res.data, status: 'ok' },
+    axios
+        .get(apiUrl + '/server/script/byos/' + os)
+        .then((res) => {
+            dispatch({
+                type: AVAILABLE_OS_FILE_DATA_SUCCESS,
+                payload: { data: res.data, status: 'ok' },
+            })
         })
-    })
         .catch((err) => {
             dispatch({
                 type: AVAILABLE_OS_FILE_DATA_ERROR,
-                payload: { data: err, status: 'error' },
+                payload: {
+                    data:
+                        err && err.response && err.response.data
+                            ? err.response.data
+                            : err,
+                    status: 'error',
+                },
             })
         })
 }

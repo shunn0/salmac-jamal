@@ -25,6 +25,7 @@ import RunCmd from '../runcmd/RunCmd'
 import RunCmdInputFile from '../runcmd-input-file/RunCmdInputFile'
 import AgentConfigList from './AgentConfigList'
 import RunCmdInput from '../runcmd-input-file/RunCmdInput'
+import AttackFxDetails from '../attackfx/AttackFxDetails'
 
 const StyledTable = styled(Table)(() => ({
     whiteSpace: 'pre',
@@ -91,7 +92,7 @@ const AgentDetails = (props) => {
                             },
                             {
                                 name:
-                                    agentData.name + ' (' + agentData.ip + ')',
+                                    agentData.name + ' | '+ agentData.os+ ' | ' + agentData.ip,
                                 path: '/',
                             },
                         ]}
@@ -109,6 +110,7 @@ const AgentDetails = (props) => {
                     <Tab label="Details" {...a11yProps(0)} />
                     <Tab label="Terminal" {...a11yProps(1)} />
                     <Tab label="File Execution" {...a11yProps(2)} />
+                    <Tab label="ATT&CK Framework" {...a11yProps(3)} />
                 </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
@@ -124,6 +126,7 @@ const AgentDetails = (props) => {
                     ''
                 )}
             </TabPanel>
+            <TabPanel value={value} index={3}><AttackFxDetails agentData={agentData}/></TabPanel>
         </Container>
     )
 }

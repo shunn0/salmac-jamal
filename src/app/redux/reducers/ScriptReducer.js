@@ -6,13 +6,15 @@ import {
     ADD_EDIT_DELETE_SCRIPT_DATA_INIT,
     ADD_EDIT_DELETE_SCRIPT_DATA,
     ADD_EDIT_DELETE_SCRIPT_DATA_ERROR,
-    ADD_EDIT_DELETE_SCRIPT_DATA_RESET
+    ADD_EDIT_DELETE_SCRIPT_DATA_RESET,
+    GET_SCRIPT_DATA
 } from '../actions/ScriptAction.js'
 
 const initialState = {
     loading: false,
     scriptListResponse: null,
     addEditScriptResponse: null,
+    getScriptResponse:null,
 }
 
 const ScriptReducer = function (state = initialState, action) {
@@ -70,6 +72,13 @@ const ScriptReducer = function (state = initialState, action) {
             return {
                 ...state,
                 addEditScriptResponse: null,
+                loading:false,
+            }
+        }
+        case GET_SCRIPT_DATA: {
+            return {
+                ...state,
+                getScriptResponse: { ...action.payload },
                 loading:false,
             }
         }
